@@ -2,16 +2,17 @@
 #include <algorithm>
 
 
-Document::Document(string newFile)
+Document::Document(ifstream& ifs)
 {
-    file = newFile;
-    ifstream f(file);
-    pd1 = &f;
+    //file = newFile;
+   // ifstream f(file);
+   // pd1 = &f;
+    pd1 = &ifs;
     parseGeneralInfo();
 }
 void Document::operator= (Document doc)
 {
-    file = doc.getFile();
+    //file = doc.getFile();
     date = doc.getDate();
     ruleName = doc.getRuleName();
     actDate = doc.getActDate();

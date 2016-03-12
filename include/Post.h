@@ -10,7 +10,7 @@ class Post
         string redaction;
         long lastLine;
         void findCurrentRedaction();
-        bool isRedactionFind(ifstream &pd2, string textLine, long &lastReadLine);
+        bool isRedactionFind(ifstream &pd2, string textLine);
     public:
         Post(Document pdd1, Document pdd2);
         /*Document getPdd1() { return pdd1; }

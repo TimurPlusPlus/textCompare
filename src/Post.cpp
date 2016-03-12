@@ -66,50 +66,51 @@ void Post::findCurrentRedaction()       //Определяет номер постановления.
 void Post::findDifference()
 {
     long lineIndex = 0;
-    string textLine;
-    ifstream pd2(pdd2.getFile());
+    string textLine = "";
+    ifstream* pd2 = pdd2.getPD();
+    /*ifstream pd2(pdd2.getFile());
     long lastReadLine = pdd2.getLastReadLine();
     while(lineIndex != lastReadLine)   //Листаем до последней строки, из которой считывали.
     {
         getline(pd2, textLine);
         lineIndex++;
-    }
+    }*/
     string actDate = pdd2.getActDate();
     while(textLine != actDate)        //Идём до первоначального номера документа.
     {
-        getline(pd2, textLine);
-        lastReadLine++;
+        getline(*pd2, textLine);
+        //lastReadLine++;
         transform(textLine.begin(), textLine.end(), textLine.begin(), ::toupper);
     }
-    getline(pd2, textLine);
-    lastReadLine++;
-    getline(pd2, textLine);
-    lastReadLine++;
+    getline(*pd2, textLine);
+    //lastReadLine++;
+    getline(*pd2, textLine);
+    //lastReadLine++;
     string regulation = "";         //Название ПРАВИЛА
     while(textLine != "")
     {
         regulation += textLine;
         regulation += " ";
-        getline(pd2, textLine);
-        lastReadLine++;
+        getline(*pd2, textLine);
+        //lastReadLine++;
     }
     cout << regulation;
-    getline(pd2, textLine); //ПЕРЕШЛИ К СКОБКАМ
-    lastReadLine++;
+    getline(*pd2, textLine); //ПЕРЕШЛИ К СКОБКАМ
+    //lastReadLine++;
     if(textLine.find("в ред. ", 0) == string::npos) //Если строка не с редакциями, а с ГОСТами.
     {
         while(textLine != "")                     //Листаем до пустой строки.
         {
-            getline(pd2, textLine);
-            lastReadLine++;
+            getline(*pd2, textLine);
+            //lastReadLine++;
         }
     }
-    getline(pd2, textLine);
-    lastReadLine++;
-    if(isRedactionFind(pd2, textLine, lastReadLine))  //Если номер найден
+    //getline(*pd2, textLine);
+    //lastReadLine++;
+    if(isRedactionFind(*pd2, textLine))  //Если номер найден
     {
 
-        cout << "COOOOOOL";
+        cout << "COOOOOOL" << " " << textLine;
     }
     else            // Если номер не найден, нужно искать следующее правило.
     {
@@ -120,7 +121,7 @@ void Post::findDifference()
   ///        ПОИСК РАЗНИЦЫ
 }
 
-bool Post::isRedactionFind(ifstream &pd2, string textLine, long &lastReadLine)
+bool Post::isRedactionFind(ifstream &pd2, string textLine)
 {
     bool seeked = false;
     while(textLine != "")
@@ -131,7 +132,7 @@ bool Post::isRedactionFind(ifstream &pd2, string textLine, long &lastReadLine)
             break;
         }
         getline(pd2, textLine);
-        lastReadLine++;
+        //lastReadLine++;
     }
     return seeked;
 }

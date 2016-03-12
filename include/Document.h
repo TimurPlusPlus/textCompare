@@ -7,7 +7,7 @@ using namespace std;
 
 class Document
 {
-        string file;
+        //string file;
         string date;
         string ruleName;
         string actDate;
@@ -20,9 +20,10 @@ class Document
         void parseGeneralInfo();
 
     public:
-        Document(string newFile);
-        string getFile() { return file; }
-        void setFile(string val) { file = val; }
+        Document (ifstream& ifs);
+        //Document(string newFile);
+       /* string getFile() { return file; }
+        void setFile(string val) { file = val; }*/
         string getDate() { return date; }
         void setDate(string val) { date = val; }
         string getRuleName() { return ruleName; }
