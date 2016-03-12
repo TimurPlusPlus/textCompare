@@ -5,7 +5,8 @@
 Document::Document(string newFile)
 {
     file = newFile;
-    //pdd =
+    ifstream f(file);
+    pd1 = &f;
     parseGeneralInfo();
 }
 void Document::operator= (Document doc)
@@ -17,38 +18,53 @@ void Document::operator= (Document doc)
     department = doc.getDepartment();
     government = doc.getGovernment();
     redactions = doc.getRedactions();
+    pd1 = doc.getPD();
 }
 void Document::parseGeneralInfo()
 {
-    ifstream pdd1(file);
+   // ifstream pd1(file);
     string textLine;
-    getline(pdd1, textLine);
-    getline(pdd1, textLine);
-    getline(pdd1, textLine);
-    getline(pdd1, textLine);
-    getline(pdd1, textLine);
+    lastReadLine = 0;
+    for(int i = 0; i < 5; i++)
+    {
+        getline(*pd1, textLine);
+        lastReadLine++;
+    }
     transform(textLine.begin(), textLine.end(), textLine.begin(), ::toupper);
     actDate = textLine;
-    getline(pdd1, textLine);
-    getline(pdd1, textLine);
+    for(int i = 0; i < 2; i++)
+    {
+        getline(*pd1, textLine);
+        lastReadLine++;
+    }
     ruleName = textLine;
-    getline(pdd1, textLine);
-    getline(pdd1, textLine);
+    for(int i = 0; i < 2; i++)
+    {
+        getline(*pd1, textLine);
+        lastReadLine++;
+    }
     string str;
     while(textLine != "")
     {
         str += textLine;
-        getline(pdd1, textLine);
+        getline(*pd1, textLine);
+        lastReadLine++;
     }
     redactions = str;
-    getline(pdd1, textLine);
+    getline(*pd1, textLine);
+    lastReadLine++;
     while (textLine != "")
-        getline(pdd1, textLine);
-    getline(pdd1, textLine);
+    {
+        getline(*pd1, textLine);
+        lastReadLine++;
+    }
+    getline(*pd1, textLine);
+    lastReadLine++;
     textLine = textLine.substr(textLine.find(" ", 0), textLine.length() - 1);
     transform(textLine.begin(), textLine.end(), textLine.begin(), ::toupper);
     department = textLine;
-    getline(pdd1, textLine);
+    getline(*pd1, textLine);
+    lastReadLine++;
     transform(textLine.begin(), textLine.end(), textLine.begin(), ::toupper);
     government = textLine;
 }

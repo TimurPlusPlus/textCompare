@@ -1,6 +1,7 @@
 #include "Post.h"
 #include "Document.h"
 #include <fstream>
+#include <algorithm>
 
 Post::Post(Document pd1, Document pd2): pdd1(pd1), pdd2(pd2)
 {
@@ -19,7 +20,7 @@ void Post::findCurrentRedaction()       //Определяет номер постановления.
     }
     else
         {                                                       //Последняя позиция, в которой совпали N ред.
-            int prevNPosition;                                 //которого нет в 1-м документе.
+            int prevNPosition;
             for(int i = 1; i < red1.length() - 2; i++)
             {
                 if(red1.at(i) != 'N')
@@ -62,6 +63,80 @@ void Post::findCurrentRedaction()       //Определяет номер постановления.
         redaction = res;
 }
 
+void Post::findDifference()
+{
+    long lineIndex = 0;
+    string textLine;
+    ifstream pd2(pdd2.getFile());
+    long lastReadLine = pdd2.getLastReadLine();
+    while(lineIndex != lastReadLine)   //Листаем до последней строки, из которой считывали.
+    {
+        getline(pd2, textLine);
+        lineIndex++;
+    }
+    string actDate = pdd2.getActDate();
+    while(textLine != actDate)        //Идём до первоначального номера документа.
+    {
+        getline(pd2, textLine);
+        lastReadLine++;
+        transform(textLine.begin(), textLine.end(), textLine.begin(), ::toupper);
+    }
+    getline(pd2, textLine);
+    lastReadLine++;
+    getline(pd2, textLine);
+    lastReadLine++;
+    string regulation = "";         //Название ПРАВИЛА
+    while(textLine != "")
+    {
+        regulation += textLine;
+        regulation += " ";
+        getline(pd2, textLine);
+        lastReadLine++;
+    }
+    cout << regulation;
+    getline(pd2, textLine); //ПЕРЕШЛИ К СКОБКАМ
+    lastReadLine++;
+    if(textLine.find("в ред. ", 0) == string::npos) //Если строка не с редакциями, а с ГОСТами.
+    {
+        while(textLine != "")                     //Листаем до пустой строки.
+        {
+            getline(pd2, textLine);
+            lastReadLine++;
+        }
+    }
+    getline(pd2, textLine);
+    lastReadLine++;
+    if(isRedactionFind(pd2, textLine, lastReadLine))  //Если номер найден
+    {
+
+        cout << "COOOOOOL";
+    }
+    else            // Если номер не найден, нужно искать следующее правило.
+    {
+
+    }
+    ///TODO: ПРОВЕРКА НОМЕРА РЕДАКЦИИ
+   ///       ОПРЕДЕЛЕНИЕ ПУНКТА, АБЗАЦА
+  ///        ПОИСК РАЗНИЦЫ
+}
+
+bool Post::isRedactionFind(ifstream &pd2, string textLine, long &lastReadLine)
+{
+    bool seeked = false;
+    while(textLine != "")
+    {
+        if(textLine.find(getPostNumber(), 0) != string::npos)   //Если номер постановления нашёлся в редакциях.
+        {
+            seeked = true;
+            break;
+        }
+        getline(pd2, textLine);
+        lastReadLine++;
+    }
+    return seeked;
+}
+
+
 void Post::makePostTitle()      //Строит шапку постановления.
 {
     string fileName = "post" + getPostNumber() + ".txt";
@@ -96,8 +171,9 @@ void Post::makePostTitle()      //Строит шапку постановления.
     post1 << pdd1.getDepartment()                 << endl;
     post1 << pdd1.getGovernment()                 << endl;
     post1 << pdd1.getActDate()                    << endl  << endl;
-    post1 << "1.";
-       // post = post1;
+    //post1 << "1.";
+
+    lastLine = post1.tellp();
 }
 
 string Post::getPostNumber()            //Возвращает номер постановления.

@@ -14,9 +14,8 @@ class Document
         string department;
         string government;
         string redactions;
-
-      //  ifstream pdd;
-    //ofstream post;
+        long lastReadLine;
+        ifstream *pd1;
 
         void parseGeneralInfo();
 
@@ -36,6 +35,9 @@ class Document
         void setGovernment(string val) { government = val; }
         string getRedactions() { return redactions; }
         void setRedactions(string val) { redactions = val; }
+        long getLastReadLine() { return lastReadLine; }
+        void setLastReadLine(long val) { lastReadLine = val; }
+        ifstream* getPD(){return pd1;}
         void operator = (Document doc);
 
 };
