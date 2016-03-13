@@ -2,70 +2,52 @@
 #include <algorithm>
 
 
-Document::Document(ifstream& ifs)
+Document::Document(string fileName)
 {
-    //file = newFile;
-   // ifstream f(file);
-   // pd1 = &f;
-    pd1 = &ifs;
+   // pd1 = &ifs;
+    this->fileName = fileName;
+    readFile();
     parseGeneralInfo();
 }
 void Document::operator= (Document doc)
 {
-    //file = doc.getFile();
     date = doc.getDate();
     ruleName = doc.getRuleName();
     actDate = doc.getActDate();
     department = doc.getDepartment();
     government = doc.getGovernment();
     redactions = doc.getRedactions();
-    pd1 = doc.getPD();
+    lastReadLine = doc.getLastReadLine();
+    text = doc.getText();
+   // pd1 = doc.getPDD();
+}
+
+void Document::readFile()
+{
+    ifstream pd1(fileName);
+    string textLine;
+    while(getline(pd1, textLine))
+        text.push_back(textLine);
 }
 void Document::parseGeneralInfo()
 {
-   // ifstream pd1(file);
     string textLine;
-    lastReadLine = 0;
-    for(int i = 0; i < 5; i++)
-    {
-        getline(*pd1, textLine);
-        lastReadLine++;
-    }
+    textLine = text.at(4);
     transform(textLine.begin(), textLine.end(), textLine.begin(), ::toupper);
     actDate = textLine;
-    for(int i = 0; i < 2; i++)
-    {
-        getline(*pd1, textLine);
-        lastReadLine++;
-    }
-    ruleName = textLine;
-    for(int i = 0; i < 2; i++)
-    {
-        getline(*pd1, textLine);
-        lastReadLine++;
-    }
+    ruleName = text.at(6);
     string str;
-    while(textLine != "")
-    {
-        str += textLine;
-        getline(*pd1, textLine);
-        lastReadLine++;
-    }
+    for(lastReadLine = 8; text.at(lastReadLine) != ""; lastReadLine++)
+        str += text.at(lastReadLine);
     redactions = str;
-    getline(*pd1, textLine);
     lastReadLine++;
-    while (textLine != "")
-    {
-        getline(*pd1, textLine);
-        lastReadLine++;
-    }
-    getline(*pd1, textLine);
+    for(lastReadLine; text.at(lastReadLine) != ""; lastReadLine++);      //Отматали до следующей пустой строки.
     lastReadLine++;
+    textLine = text.at(lastReadLine);
     textLine = textLine.substr(textLine.find(" ", 0), textLine.length() - 1);
     transform(textLine.begin(), textLine.end(), textLine.begin(), ::toupper);
     department = textLine;
-    getline(*pd1, textLine);
-    lastReadLine++;
+    textLine = text.at(lastReadLine);
     transform(textLine.begin(), textLine.end(), textLine.begin(), ::toupper);
     government = textLine;
 }

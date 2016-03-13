@@ -65,50 +65,32 @@ void Post::findCurrentRedaction()       //Определяет номер постановления.
 
 void Post::findDifference()
 {
-    long lineIndex = 0;
     string textLine = "";
-    ifstream* pd2 = pdd2.getPD();
-    /*ifstream pd2(pdd2.getFile());
-    long lastReadLine = pdd2.getLastReadLine();
-    while(lineIndex != lastReadLine)   //Листаем до последней строки, из которой считывали.
-    {
-        getline(pd2, textLine);
-        lineIndex++;
-    }*/
+    vector <string> pd1 = pdd1.getText();
+    vector <string> pd2 = pdd2.getText();
     string actDate = pdd2.getActDate();
+    long lastReadLine = pdd2.getLastReadLine();
     while(textLine != actDate)        //Идём до первоначального номера документа.
     {
-        getline(*pd2, textLine);
-        //lastReadLine++;
+        textLine = pd2.at(lastReadLine);
+        lastReadLine++;
         transform(textLine.begin(), textLine.end(), textLine.begin(), ::toupper);
     }
-    getline(*pd2, textLine);
-    //lastReadLine++;
-    getline(*pd2, textLine);
-    //lastReadLine++;
-    string regulation = "";         //Название ПРАВИЛА
-    while(textLine != "")
+    string regulation = "";                         //Название ПРАВИЛА
+    for(lastReadLine += 1; pd2.at(lastReadLine) != ""; lastReadLine++)
     {
-        regulation += textLine;
+        regulation += pd2.at(lastReadLine);
         regulation += " ";
-        getline(*pd2, textLine);
-        //lastReadLine++;
     }
     cout << regulation;
-    getline(*pd2, textLine); //ПЕРЕШЛИ К СКОБКАМ
-    //lastReadLine++;
+    lastReadLine++;
+    textLine = pd2.at(lastReadLine);                //ПЕРЕШЛИ К СКОБКАМ
     if(textLine.find("в ред. ", 0) == string::npos) //Если строка не с редакциями, а с ГОСТами.
+        for(lastReadLine; pd2.at(lastReadLine) != ""; lastReadLine++); //Листаем до пустой строки.
+    lastReadLine++;
+    if(isRedactionFind(pd2, lastReadLine))                              //Если номер найден
     {
-        while(textLine != "")                     //Листаем до пустой строки.
-        {
-            getline(*pd2, textLine);
-            //lastReadLine++;
-        }
-    }
-    //getline(*pd2, textLine);
-    //lastReadLine++;
-    if(isRedactionFind(*pd2, textLine))  //Если номер найден
-    {
+        for(lastReadLine; pd2.at(lastReadLine) != ""; lastReadLine++); //Листаем до пустой строки.
 
         cout << "COOOOOOL" << " " << textLine;
     }
@@ -116,25 +98,21 @@ void Post::findDifference()
     {
 
     }
-    ///TODO: ПРОВЕРКА НОМЕРА РЕДАКЦИИ
+
    ///       ОПРЕДЕЛЕНИЕ ПУНКТА, АБЗАЦА
   ///        ПОИСК РАЗНИЦЫ
 }
 
-bool Post::isRedactionFind(ifstream &pd2, string textLine)
+bool Post::isRedactionFind(vector <string> & pd2, long & lastReadLine)
 {
-    bool seeked = false;
-    while(textLine != "")
+    string textLine;
+    for(lastReadLine; pd2.at(lastReadLine) != ""; lastReadLine++)
     {
+        textLine = pd2.at(lastReadLine);
         if(textLine.find(getPostNumber(), 0) != string::npos)   //Если номер постановления нашёлся в редакциях.
-        {
-            seeked = true;
-            break;
-        }
-        getline(pd2, textLine);
-        //lastReadLine++;
+            return true;
     }
-    return seeked;
+    return false;
 }
 
 
@@ -172,9 +150,6 @@ void Post::makePostTitle()      //Строит шапку постановления.
     post1 << pdd1.getDepartment()                 << endl;
     post1 << pdd1.getGovernment()                 << endl;
     post1 << pdd1.getActDate()                    << endl  << endl;
-    //post1 << "1.";
-
-    lastLine = post1.tellp();
 }
 
 string Post::getPostNumber()            //Возвращает номер постановления.

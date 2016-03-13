@@ -2,15 +2,15 @@
 #define POST_H
 #include "Document.h"
 #include <fstream>
+#include <vector>
 
 class Post
 {
         Document pdd1;
         Document pdd2;
         string redaction;
-        long lastLine;
         void findCurrentRedaction();
-        bool isRedactionFind(ifstream &pd2, string textLine);
+        bool isRedactionFind(vector <string> & pd2, long &lastReadLine);
     public:
         Post(Document pdd1, Document pdd2);
         /*Document getPdd1() { return pdd1; }
@@ -22,8 +22,6 @@ class Post
         void makePostTitle();
         string getPostNumber();
         void findDifference();
-
-
 };
 
 #endif // POST_H

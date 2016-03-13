@@ -2,28 +2,26 @@
 #define DOCUMENT_H
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 using namespace std;
 
 class Document
 {
-        //string file;
         string date;
         string ruleName;
         string actDate;
         string department;
         string government;
         string redactions;
+        string fileName;
         long lastReadLine;
-        ifstream *pd1;
+        vector <string> text;
 
         void parseGeneralInfo();
-
+        void readFile();
     public:
-        Document (ifstream& ifs);
-        //Document(string newFile);
-       /* string getFile() { return file; }
-        void setFile(string val) { file = val; }*/
+        Document (string);
         string getDate() { return date; }
         void setDate(string val) { date = val; }
         string getRuleName() { return ruleName; }
@@ -38,7 +36,8 @@ class Document
         void setRedactions(string val) { redactions = val; }
         long getLastReadLine() { return lastReadLine; }
         void setLastReadLine(long val) { lastReadLine = val; }
-        ifstream* getPD(){return pd1;}
+       // ifstream* getPDD(){return pd1;}
+        vector <string> getText(){return text;}
         void operator = (Document doc);
 
 };

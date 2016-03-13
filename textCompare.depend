@@ -1,23 +1,25 @@
 # depslib dependency file v1.0
-1457800757 source:c:\users\1\documents\textcompare\main.cpp
+1457859605 source:c:\users\1\documents\textcompare\main.cpp
 	<iostream>
 	<clocale>
 	"include\Document.h"
 	"include\Post.h"
 
-1457800801 c:\users\1\documents\textcompare\include\document.h
+1457857398 c:\users\1\documents\textcompare\include\document.h
 	<iostream>
 	<fstream>
+	<vector>
 
-1457795676 c:\users\1\documents\textcompare\include\post.h
+1457858978 c:\users\1\documents\textcompare\include\post.h
 	"Document.h"
 	<fstream>
+	<vector>
 
-1457800832 source:c:\users\1\documents\textcompare\src\document.cpp
+1457859681 source:c:\users\1\documents\textcompare\src\document.cpp
 	"Document.h"
 	<algorithm>
 
-1457800848 source:c:\users\1\documents\textcompare\src\post.cpp
+1457859749 source:c:\users\1\documents\textcompare\src\post.cpp
 	"Post.h"
 	"Document.h"
 	<fstream>
