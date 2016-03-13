@@ -13,7 +13,7 @@ int main()
     Document pdd1(file1);
     Document pdd2(file2);
     Post post(pdd1, pdd2);
-    post.findDifference();
+    post.compare();
     //post.makePostTitle();       //Создаём шапку постановления.
     return 0;
 }

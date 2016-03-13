@@ -21,7 +21,8 @@ class Post
         void setRedaction(string val) { redaction = val; }
         void makePostTitle();
         string getPostNumber();
-        void findDifference();
+        void compare();
+        void findDifference(vector <string> &pd1, vector <string> &pd2, long &lastReadLine);
 };
 
 #endif // POST_H

@@ -2,6 +2,7 @@
 #include "Document.h"
 #include <fstream>
 #include <algorithm>
+#include <cctype>
 
 Post::Post(Document pd1, Document pd2): pdd1(pd1), pdd2(pd2)
 {
@@ -63,7 +64,7 @@ void Post::findCurrentRedaction()       //Определяет номер постановления.
         redaction = res;
 }
 
-void Post::findDifference()
+void Post::compare()
 {
     string textLine = "";
     vector <string> pd1 = pdd1.getText();
@@ -86,13 +87,12 @@ void Post::findDifference()
     lastReadLine++;
     textLine = pd2.at(lastReadLine);                //ПЕРЕШЛИ К СКОБКАМ
     if(textLine.find("в ред. ", 0) == string::npos) //Если строка не с редакциями, а с ГОСТами.
-        for(lastReadLine; pd2.at(lastReadLine) != ""; lastReadLine++); //Листаем до пустой строки.
+        for(lastReadLine; pd2.at(lastReadLine) != ""; lastReadLine++);   //Листаем до пустой строки.
     lastReadLine++;
-    if(isRedactionFind(pd2, lastReadLine))                              //Если номер найден
+    if(isRedactionFind(pd2, lastReadLine))                               //Если номер найден
     {
-        for(lastReadLine; pd2.at(lastReadLine) != ""; lastReadLine++); //Листаем до пустой строки.
-
-        cout << "COOOOOOL" << " " << textLine;
+        for(lastReadLine; pd2.at(lastReadLine) != ""; lastReadLine++);  //Листаем до пустой строки.
+        findDifference(pd1, pd2, lastReadLine);
     }
     else            // Если номер не найден, нужно искать следующее правило.
     {
@@ -101,6 +101,83 @@ void Post::findDifference()
 
    ///       ОПРЕДЕЛЕНИЕ ПУНКТА, АБЗАЦА
   ///        ПОИСК РАЗНИЦЫ
+  ///СРАВНИТЬ ЗАГОЛОВКИ
+}
+void Post::findDifference(vector <string> &pd1, vector <string> &pd2, long &lastReadLine2)
+{
+    long lastReadLine1 = lastReadLine2;
+    while(pd1.at(lastReadLine1) != pd2.at(lastReadLine2)) //Мотаем оба файла до положения перед 1 разделом.
+        lastReadLine1--;
+    int lineBreakNum = 0;
+    lastReadLine1++;
+    lastReadLine2++;
+    string textLine;
+    string paragraph = "";
+    string point = "";
+    int indent = 1;
+    while(lineBreakNum != 5)
+    {
+        paragraph = "";
+        point = "";
+        textLine = pd2.at(lastReadLine2);
+        if(textLine == "") lineBreakNum++;
+        else    lineBreakNum = 0;
+        if(textLine != "")
+         {
+             if(//textLine.at(textLine.length() - 1) != '.'
+              // && textLine.at(textLine.length() - 1) != ')'
+               //&& textLine.at(textLine.length() - 1) != '-'
+               //&& textLine.at(textLine.length() - 1) != ';'
+               ispunct(textLine.at(textLine.length() - 1)) == 0
+               && isdigit(textLine.at(0))
+               /*&& textLine.at(textLine.length() - 1) != ':'*/)  //Если РАЗДЕЛ
+            {
+              /*  for(lastReadLine2; pd2.at(lastReadLine2) != ""; lastReadLine2++) //Если название 2-х этажное
+                {*/
+                   // textLine = pd2.at(lastReadLine2);
+                    paragraph += textLine.substr(0, textLine.find(". ", 0));
+                //}
+                point = "";
+                indent = 1;
+                cout << endl << paragraph;
+            }
+            else
+            {
+                if(isdigit(textLine.at(0)))                  //Если ПУНКТ (НЕ ДЛЯ ПРИЛОЖЕНИЙ 1,2)
+                {
+                    point = textLine.substr(0, textLine.find(". ", 0));
+                    indent = 1;
+                    //cout << endl << point;
+                }
+                else if(textLine.at(0) != '('
+                            //&& textLine.find("Примечание", 0) != 0
+                        && textLine.find("---", 0) == string::npos
+                        && textLine.at(0) != '<'
+                        && textLine.find("Абзац исключен.", 0) != 0)            //Если абзац
+                            {if(textLine.find("КонсультантПлюс:", 0) == 0)
+                            {
+                                lastReadLine2 += 2;
+                                continue;
+                            }}
+                    else if(textLine.at(0) == '('
+                                || textLine.find("бзац исключен.", 0) == 1
+                                || textLine.find("<*> Сноска исключена", 0) == 0
+                                || textLine.find("Примечание исключено", 0) == 0)    //Пошли скобочки с исправлениями.
+                        {
+                            if(textLine.find(getPostNumber(), 0) != string::npos) //Если ВНОСИЛИСЬ ИЗМЕНЕНИЯ. тек. ред
+                            {
+                                cout << endl << textLine;
+                            }
+                        }
+            }
+
+         }
+
+
+
+
+        lastReadLine2++;
+    }
 }
 
 bool Post::isRedactionFind(vector <string> & pd2, long & lastReadLine)
@@ -114,7 +191,6 @@ bool Post::isRedactionFind(vector <string> & pd2, long & lastReadLine)
     }
     return false;
 }
-
 
 void Post::makePostTitle()      //Строит шапку постановления.
 {
